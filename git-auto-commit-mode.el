@@ -7,7 +7,7 @@
 (define-minor-mode git-auto-commit-mode
   "Automatically commit any changes made when saving with this mode
 turned on"
-  :lighter "ga"
+  :lighter " ga"
   (if git-auto-commit-mode
       (add-hook 'after-save-hook 'git-auto-commit t t)
     (remove-hook 'after-save-hook 'git-auto-commit t)))
