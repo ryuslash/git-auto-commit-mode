@@ -102,7 +102,7 @@ already have been set up."
   "Commit the changes to the current file, and when
 `gac-automatically-push' is not `nil', push."
   (gac-commit)
-  (when gac-auto-push
+  (when gac-automatically-push
     (gac-push)))
 
 (define-minor-mode git-auto-commit-mode
