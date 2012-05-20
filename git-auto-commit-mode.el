@@ -2,10 +2,11 @@
 
 ;; Copyright (C) 2012 Tom Willemsen <tom@ryuslash.org>
 
+;; Author: Tom Willemsen <tom@ryuslash.org>
 ;; Created: Jan 9, 2012
 ;; Version: 1
-
-;; This file is not part of GNU Emacs.
+;; Keywords: vc
+;; URL: http://ryuslash.org/git-auto-commit-mode/
 
 ;; This file is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
@@ -18,9 +19,16 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this file; if not, write to the Free Software
-;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with this file; If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; git-auto-commit-mode is an Emacs minor mode that tries to commit
+;; changes to a file after every save.
+
+;;; Change Log:
+
+;; 1 - Initial release.
 
 ;;; Code:
 
@@ -52,3 +60,5 @@ turned on"
   (if git-auto-commit-mode
       (add-hook 'after-save-hook 'git-auto-commit t t)
     (remove-hook 'after-save-hook 'git-auto-commit t)))
+
+;;; git-auto-commit-mode.el ends here
