@@ -4,7 +4,7 @@
 
 ;; Author: Tom Willemsen <tom@ryuslash.org>
 ;; Created: Jan 9, 2012
-;; Version: 2
+;; Version: 3
 ;; Keywords: vc
 ;; URL: http://ryuslash.org/git-auto-commit-mode/
 
@@ -34,6 +34,8 @@
 ;; 1 - Initial release.
 
 ;; 2 - Add ability to automatically push.
+
+;; 3 - Shows the status when push finishes.
 
 ;;; Code:
 
@@ -75,6 +77,10 @@ user for one when it does."
     (let ((inhibit-read-only t))
       (gac-password proc string))))
 
+(defun gac-process-sentinel (proc status)
+  "Report the process' status change."
+  (message "git %s" (substring status 0 -1)))
+
 (defun gac-commit ()
   "Commit `buffer-file-name' to git"
   (let* ((filename (buffer-file-name))
@@ -89,6 +95,7 @@ user for one when it does."
 doesn't check or ask for a remote, so the correct remote should
 already have been set up."
   (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
+    (set-process-sentinel proc 'gac-process-sentinel)
     (set-process-filter proc 'gac-process-filter)))
 
 (defun gac-after-save-func ()
