@@ -1,10 +1,10 @@
-;;; git-auto-commit-mode.el --- Emacs Minor mode to automatically commit
+;;; git-auto-commit-mode.el --- Emacs Minor mode to automatically commit and push
 
 ;; Copyright (C) 2012 Tom Willemsen <tom@ryuslash.org>
 
 ;; Author: Tom Willemsen <tom@ryuslash.org>
 ;; Created: Jan 9, 2012
-;; Version: 1
+;; Version: 2
 ;; Keywords: vc
 ;; URL: http://ryuslash.org/git-auto-commit-mode/
 
@@ -26,11 +26,20 @@
 ;; git-auto-commit-mode is an Emacs minor mode that tries to commit
 ;; changes to a file after every save.
 
+;; When `git-automatically-push' is non-nil, it also tries to push to
+;; the current upstream.
+
 ;;; Change Log:
 
 ;; 1 - Initial release.
 
+;; 2 - Add ability to automatically push.
+
 ;;; Code:
+
+(defvar gac-automatically-push nil
+  "Control whether or not `git-auto-commit-mode' should also
+  automatically push the changes.")
 
 (defun gac-relative-file-name (filename)
   "Find the path to the filename relative to the git directory"
@@ -44,6 +53,28 @@
                     git-dir "" filename))))
     relative-file-name))
 
+(defun gac-password (proc string)
+  "Ask the user for a password when necessary."
+  (let (ask)
+    (cond
+     ((or
+       (string-match "^Enter passphrase for key '\\\(.*\\\)': $" string)
+       (string-match "^\\\(.*\\\)'s password:" string))
+      (setq ask (format "Password for '%s': " (match-string 1 string))))
+     ((string-match "^[pP]assword:" string)
+      (setq ask "Password:")))
+
+    (when ask
+      (process-send-string proc (concat (read-passwd ask nil) "\n")))))
+
+(defun gac-process-filter (proc string)
+  "Checks if the process is asking for a password and asks the
+user for one when it does."
+  (save-current-buffer
+    (set-buffer (process-buffer proc))
+    (let ((inhibit-read-only t))
+      (gac-password proc string))))
+
 (defun gac-commit ()
   "Commit `buffer-file-name' to git"
   (let* ((filename (buffer-file-name))
@@ -53,12 +84,26 @@
      (concat "git add " filename
              " && git commit -m '" relative-filename "'"))))
 
+(defun gac-push ()
+  "Push changes to the repository to the current upstream. This
+doesn't check or ask for a remote, so the correct remote should
+already have been set up."
+  (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
+    (set-process-filter proc 'gac-process-filter)))
+
+(defun gac-after-save-func ()
+  "Commit the changes to the current file, and when
+`gac-automatically-push' is not `nil', push."
+  (gac-commit)
+  (when gac-auto-push
+    (gac-push)))
+
 (define-minor-mode git-auto-commit-mode
   "Automatically commit any changes made when saving with this
-mode turned on"
+mode turned on and optionally push them too."
   :lighter " ga"
   (if git-auto-commit-mode
-      (add-hook 'after-save-hook 'gac-commit t t)
-    (remove-hook 'after-save-hook 'gac-commit t)))
+      (add-hook 'after-save-hook 'gac-after-save-func t t)
+    (remove-hook 'after-save-hook 'gac-after-save-func t)))
 
 ;;; git-auto-commit-mode.el ends here
