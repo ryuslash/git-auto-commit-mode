@@ -105,6 +105,7 @@ already have been set up."
   (when gac-automatically-push
     (gac-push)))
 
+;;;###autoload
 (define-minor-mode git-auto-commit-mode
   "Automatically commit any changes made when saving with this
 mode turned on and optionally push them too."
