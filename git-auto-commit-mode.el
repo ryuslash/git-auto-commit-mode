@@ -26,8 +26,8 @@
 ;; git-auto-commit-mode is an Emacs minor mode that tries to commit
 ;; changes to a file after every save.
 
-;; When `git-automatically-push' is non-nil, it also tries to push to
-;; the current upstream.
+;; When `gac-automatically-push-p' is non-nil, it also tries to push
+;; to the current upstream.
 
 ;;; Change Log:
 
@@ -41,6 +41,8 @@
 
 ;;   - Rename `gac-automatically-push' to `gac-automatically-push-p'
 ;;     to follow standard emacs-lisp conventions.
+
+;;   - Fix commentary about `gac-automatically-push-p'.
 
 ;;; Code:
 
