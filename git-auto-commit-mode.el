@@ -4,7 +4,7 @@
 
 ;; Author: Tom Willemsen <tom@ryuslash.org>
 ;; Created: Jan 9, 2012
-;; Version: 3
+;; Version: 4
 ;; Keywords: vc
 ;; URL: http://ryuslash.org/git-auto-commit-mode/
 
@@ -37,11 +37,14 @@
 
 ;; 3 - Shows the status when push finishes.
 
+;; 4 - Make `gac-automatically-push' buffer local, always.
+
 ;;; Code:
 
 (defvar gac-automatically-push nil
   "Control whether or not `git-auto-commit-mode' should also
   automatically push the changes.")
+(make-variable-buffer-local 'gac-automatically-push)
 
 (defun gac-relative-file-name (filename)
   "Find the path to the filename relative to the git directory"
