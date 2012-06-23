@@ -4,7 +4,7 @@
 
 ;; Author: Tom Willemsen <tom@ryuslash.org>
 ;; Created: Jan 9, 2012
-;; Version: 4
+;; Version: 4.1
 ;; Keywords: vc
 ;; URL: http://org.ryuslash.org/projects/git-auto-commit-mode.html
 
