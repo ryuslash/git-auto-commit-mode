@@ -6,7 +6,7 @@
 ;; Created: Jan 9, 2012
 ;; Version: 4
 ;; Keywords: vc
-;; URL: http://ryuslash.org/git-auto-commit-mode/
+;; URL: http://org.ryuslash.org/projects/git-auto-commit-mode.html
 
 ;; This file is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
