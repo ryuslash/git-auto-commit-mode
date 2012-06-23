@@ -39,12 +39,15 @@
 
 ;; 4 - Make `gac-automatically-push' buffer local, always.
 
+;;   - Rename `gac-automatically-push' to `gac-automatically-push-p'
+;;     to follow standard emacs-lisp conventions.
+
 ;;; Code:
 
-(defvar gac-automatically-push nil
+(defvar gac-automatically-push-p nil
   "Control whether or not `git-auto-commit-mode' should also
   automatically push the changes.")
-(make-variable-buffer-local 'gac-automatically-push)
+(make-variable-buffer-local 'gac-automatically-push-p)
 
 (defun gac-relative-file-name (filename)
   "Find the path to the filename relative to the git directory"
@@ -103,9 +106,9 @@ already have been set up."
 
 (defun gac-after-save-func ()
   "Commit the changes to the current file, and when
-`gac-automatically-push' is not `nil', push."
+`gac-automatically-push-p' is not `nil', push."
   (gac-commit)
-  (when gac-automatically-push
+  (when gac-automatically-push-p
     (gac-push)))
 
 ;;;###autoload
