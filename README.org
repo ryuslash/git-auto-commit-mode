@@ -1,0 +1,74 @@
+#+TITLE: git-auto-commit-mode
+#+STARTUP: showall
+
+* NAME
+
+  git-auto-commit-mode - Emacs minor mode to automatically commit (and
+  push) a git repository.
+
+* SYNOPSIS
+
+  =M-x git-auto-commit-mode <RET>=
+
+* DESCRIPTION
+
+  git-auto-commit-mode is an Emacs minor mode that tries to commit
+  changes to a file after every save.
+
+  The commit message sent to git is always the filename of the file
+  saved, relative to the root of the git repository.
+
+* USAGE
+
+  When enabled, git-auto-commit-mode uses the =after-save-hook= to
+  commit changes to git each time. If =gac-automatically-push-p= is
+  non-nil it also tries to push the ~HEAD~ to the current upstream.
+  Making sure that upstream is properly set is the responsibility of
+  the user.
+
+** Enabling
+
+   Since git-auto-commit-mode is a regular minor mode you have more
+   than one option to enable it.
+
+*** As a file-local variable
+
+    If you're using Emacs 24 or newer you should set an =eval=
+    file-local variable:
+    #+BEGIN_EXAMPLE
+      ;; -*- eval: (git-auto-commit-mode 1) -*-
+    #+END_EXAMPLE
+
+    If you're using an older version of Emacs, that should be:
+    #+BEGIN_EXAMPLE
+      ;; -*- mode: git-auto-commit -*-
+    #+END_EXAMPLE
+
+*** As a directory-local variable
+
+    If you're using Emacs 24 or newer you should set an =eval= variable:
+    #+BEGIN_EXAMPLE
+      ((nil . ((eval git-auto-commit-mode 1))))
+    #+END_EXAMPLE
+
+    If you're using an older version of Emacs, that should be:
+    #+BEGIN_EXAMPLE
+      ((nil . ((mode . git-auto-commit))))
+    #+END_EXAMPLE
+
+*** As a hook
+
+    To enable git-auto-commit-mode each time a ~certain-hook~ runs:
+    #+BEGIN_EXAMPLE
+      (add-hook 'certain-hook 'git-auto-commit-mode)
+    #+END_EXAMPLE
+
+* CUSTOMIZATION
+
+  git-auto-commit-mode is a simple mode, as such it offers little
+  customization.
+
+  - =gac-automatically-push-p= :: A boolean value indicating whether or
+       not git-auto-commit-mode should try to push the git
+       repository's ~HEAD~ to its default upstream. Setting up the
+       upstream is the user's responsibility.
