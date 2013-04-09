@@ -29,21 +29,6 @@
 ;; When `gac-automatically-push-p' is non-nil, it also tries to push
 ;; to the current upstream.
 
-;;; Change Log:
-
-;; 1 - Initial release.
-
-;; 2 - Add ability to automatically push.
-
-;; 3 - Shows the status when push finishes.
-
-;; 4 - Make `gac-automatically-push' buffer local, always.
-
-;;   - Rename `gac-automatically-push' to `gac-automatically-push-p'
-;;     to follow standard emacs-lisp conventions.
-
-;;   - Fix commentary about `gac-automatically-push-p'.
-
 ;;; Code:
 
 (defvar gac-automatically-push-p nil

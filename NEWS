@@ -1,0 +1,30 @@
+# -*- mode: org; -*-
+
+* v4.2.0
+
+  - Add README and NEWS files.
+
+* v4.1
+
+  - Update package URL to new homepage.
+
+* v4
+
+  - Make =gac-automatically-push= buffer local, always.
+
+  - Rename =gac-automatically-push= to =gac-automatically-push-p= to
+    follow standard emacs-lisp conventions.
+
+  - Fix commentary about =gac-automatically-push-p=.
+
+* v3
+
+  - Shows the status when push finishes.
+
+* v2
+
+  - Add ability to automatically push.
+
+* v1
+
+  - Initial release.
