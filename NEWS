@@ -1,5 +1,9 @@
 # -*- mode: org; -*-
 
+* v4.2.1
+
+  - Fix some version number mistakes.
+
 * v4.2.0
 
   - Add README, NEWS, CONTRIBUTING and INSTALL files.

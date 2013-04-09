@@ -3,7 +3,7 @@
 #+OPTIONS: num:nil toc:nil author:nil
 #+STARTUP: showall
 #+STYLE: <link rel="stylesheet" type="text/css" href="stylesheet.css" />
-#+MACRO: ver 0.4.2
+#+MACRO: ver 4.2.1
 
 #+BEGIN_CENTER
 [[http://code.ryuslash.org/cgit.cgi/emacs/git-auto-commit-mode/][Browse source]]
