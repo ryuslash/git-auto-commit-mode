@@ -31,9 +31,17 @@
 
 ;;; Code:
 
-(defvar gac-automatically-push-p nil
+(defgroup git-auto-commit-mode nil
+  "Customization options for `git-auto-commit-mode'."
+  :group 'external)
+
+(defcustom gac-automatically-push-p nil
   "Control whether or not `git-auto-commit-mode' should also
-  automatically push the changes.")
+  automatically push the changes committed after each save."
+  :tag "Automatically push"
+  :group 'git-auto-commit-mode
+  :type 'boolean
+  :risky t)
 (make-variable-buffer-local 'gac-automatically-push-p)
 
 (defun gac-relative-file-name (filename)

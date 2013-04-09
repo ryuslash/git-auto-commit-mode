@@ -4,6 +4,8 @@
 
   - Add README and NEWS files.
 
+  - Use Emacs' Customize interface for user options.
+
 * v4.1
 
   - Update package URL to new homepage.
