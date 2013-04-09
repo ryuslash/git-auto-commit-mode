@@ -1,0 +1,68 @@
+a
+{
+    color: #6d97bf;
+}
+
+a:visited
+{
+    color: #b27dbf;
+}
+
+body
+{
+    font-family: "DejaVu Sans", sans-serif;
+    background-color: #222224;
+    color: #eeeeec;
+}
+
+code,
+pre
+{
+    font-family: "Envy Code R", monospace;
+}
+
+h3, h4,
+.outline-text-2,
+.outline-text-3,
+.outline-text-4
+{
+    margin-left: 20px;
+}
+
+pre
+{
+    background-color: #111113;
+    color: #eeeeec;
+    border: 1px solid #a5a5a4;
+    border-radius: 2px;
+}
+
+ul
+{
+    margin-left: -20px;
+}
+
+#content
+{
+    width: 700px;
+}
+
+#org-div-home-and-up
+{
+    width: 750px;
+}
+
+#postamble
+{
+    font-size: 12px;
+    padding: 3px 5px;
+    border: 1px solid #a5a5a4;
+    width: 690px;
+}
+
+#postamble p
+{
+    margin: 0;
+    padding: 0;
+    line-height: 1.3em;
+}

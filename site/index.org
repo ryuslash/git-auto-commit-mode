@@ -1,0 +1,26 @@
+#+TITLE: git-auto-commit-mode
+#+LINK_HOME: http://ryuslash.org/
+#+OPTIONS: num:nil toc:nil author:nil
+#+STARTUP: showall
+#+STYLE: <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+#+MACRO: ver 0.4.2
+
+#+BEGIN_CENTER
+[[http://code.ryuslash.org/cgit.cgi/emacs/git-auto-commit-mode/][Browse source]]
+[[http://blog.ryuslash.org/tags/git-auto-commit-mode][Read posts]]
+Download: [[http://code.ryuslash.org/cgit.cgi/emacs/git-auto-commit-mode/snapshot/git-auto-commit-mode-{{{ver}}}.tar.gz][TAR.GZ]], [[http://code.ryuslash.org/cgit.cgi/emacs/git-auto-commit-mode/snapshot/git-auto-commit-mode-{{{ver}}}.zip][ZIP]]
+#+END_CENTER
+
+#+INCLUDE: "../README.org"
+
+* INSTALLING
+
+#+INCLUDE: "../INSTALL" :minlevel 2
+
+* CONTRIBUTING
+
+#+INCLUDE: "../CONTRIBUTING" :minlevel 2
+
+* NEWS
+
+#+INCLUDE: "../NEWS" :minlevel 2

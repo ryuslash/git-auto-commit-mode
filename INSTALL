@@ -1,0 +1,36 @@
+# -*- mode: org; -*-
+#+STARTUP: showall
+
+In order to use git-auto-commit-mode you need to make sure that it
+can be found in your =load-path=. You can do this either by installing
+it through ELPA or you can do it manually.
+
+* ELPA
+
+  git-auto-commit-mode can be found in both [[http://marmalade-repo.org/][Marmalade]] and [[http://melpa.milkbox.net/][MELPA]], so
+  if you have either of those set-up installing should be as easy as:
+  #+BEGIN_EXAMPLE
+    M-x package-install <RET> git-auto-commit-mode <RET>
+  #+END_EXAMPLE
+
+  And you're done.
+
+* Manual
+
+  To install git-auto-commit-mode manually you should download the
+  sources from one of the several places it can be found, after which
+  you should extract the archive and add the resulting directory to
+  you load path:
+  #+BEGIN_EXAMPLE
+    (add-to-list 'load-path "/path/to/git-auto-commit-mode")
+  #+END_EXAMPLE
+
+  Once it can be found in your =load-path= you can =load=, =require= or
+  =autoload= it, whichever you like:
+  #+BEGIN_EXAMPLE
+    (require 'git-auto-commit-mode)
+
+    ;; Or...
+
+    (autoload 'git-auto-commit-mode "git-auto-commit-mode")
+  #+END_EXAMPLE

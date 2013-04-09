@@ -2,9 +2,10 @@
 
 * v4.2.0
 
-  - Add README and NEWS files.
+  - Add README, NEWS, CONTRIBUTING and INSTALL files.
 
-  - Use Emacs' Customize interface for user options.
+  - Use Emacs' Customize interface for user option
+    =gac-automatically-push-p=.
 
 * v4.1
 
