@@ -115,4 +115,6 @@ mode turned on and optionally push them too."
       (add-hook 'after-save-hook 'gac-after-save-func t t)
     (remove-hook 'after-save-hook 'gac-after-save-func t)))
 
+(provide 'git-auto-commit-mode)
+
 ;;; git-auto-commit-mode.el ends here
