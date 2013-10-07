@@ -1,8 +1,8 @@
 ;;; git-auto-commit-mode.el --- Emacs Minor mode to automatically commit and push
 
-;; Copyright (C) 2012,2013 Tom Willemsen <tom@ryuslash.org>
+;; Copyright (C) 2012,2013 Tom Willemse <tom@ryuslash.org>
 
-;; Author: Tom Willemsen <tom@ryuslash.org>
+;; Author: Tom Willemse <tom@ryuslash.org>
 ;; Created: Jan 9, 2012
 ;; Version: 4.2.2
 ;; Keywords: vc
