@@ -36,8 +36,9 @@
   :group 'external)
 
 (defcustom gac-automatically-push-p nil
-  "Control whether or not `git-auto-commit-mode' should also
-  automatically push the changes committed after each save."
+  "Automatically push after each commit.
+
+If non-nil a git push will be executed after each commit."
   :tag "Automatically push"
   :group 'git-auto-commit-mode
   :type 'boolean
@@ -45,7 +46,7 @@
 (make-variable-buffer-local 'gac-automatically-push-p)
 
 (defun gac-relative-file-name (filename)
-  "Find the path to the filename relative to the git directory"
+  "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
           (replace-regexp-in-string
            "\n+$" "" (shell-command-to-string
@@ -57,7 +58,10 @@
     relative-file-name))
 
 (defun gac-password (proc string)
-  "Ask the user for a password when necessary."
+  "Ask the user for a password when necessary.
+
+PROC is the process running git.  STRING is the line that was
+output by PROC."
   (let (ask)
     (cond
      ((or
@@ -71,19 +75,20 @@
       (process-send-string proc (concat (read-passwd ask nil) "\n")))))
 
 (defun gac-process-filter (proc string)
-  "Checks if the process is asking for a password and asks the
-user for one when it does."
+  "Check if PROC is asking for a password and promps the user if so.
+
+STRING is the output line from PROC."
   (save-current-buffer
     (set-buffer (process-buffer proc))
     (let ((inhibit-read-only t))
       (gac-password proc string))))
 
 (defun gac-process-sentinel (proc status)
-  "Report the process' status change."
+  "Report PROC change to STATUS."
   (message "git %s" (substring status 0 -1)))
 
 (defun gac-commit ()
-  "Commit `buffer-file-name' to git"
+  "Commit the current buffer's file to git."
   (let* ((filename (buffer-file-name))
          (relative-filename
           (gac-relative-file-name filename)))
@@ -92,16 +97,18 @@ user for one when it does."
              " && git commit -m '" relative-filename "'"))))
 
 (defun gac-push ()
-  "Push changes to the repository to the current upstream. This
-doesn't check or ask for a remote, so the correct remote should
-already have been set up."
+  "Push commits to the current upstream.
+
+This doesn't check or ask for a remote, so the correct remote
+should already have been set up."
   (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
     (set-process-sentinel proc 'gac-process-sentinel)
     (set-process-filter proc 'gac-process-filter)))
 
 (defun gac-after-save-func ()
-  "Commit the changes to the current file, and when
-`gac-automatically-push-p' is not `nil', push."
+  "Commit the current file.
+
+When `gac-automatically-push-p' is non-nil also push."
   (gac-commit)
   (when gac-automatically-push-p
     (gac-push)))
