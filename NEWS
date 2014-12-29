@@ -1,5 +1,9 @@
 # -*- mode: org; -*-
 
+* v4.3.0
+
+  - Add user option =gac-ask-for-summary-p=.
+
 * v4.2.2
 
   - =provide= a ~git-auto-commit-mode~ feature. (Thanks Jascha Geerds!)
