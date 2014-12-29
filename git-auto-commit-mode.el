@@ -45,6 +45,12 @@ If non-nil a git push will be executed after each commit."
   :risky t)
 (make-variable-buffer-local 'gac-automatically-push-p)
 
+(defcustom gac-ask-for-summary-p nil
+  "Ask the user for a short summary each time a file is committed?"
+  :tag "Ask for a summary on each commit"
+  :group 'git-auto-commit-mode
+  :type 'boolean)
+
 (defun gac-relative-file-name (filename)
   "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
@@ -87,14 +93,21 @@ STRING is the output line from PROC."
   "Report PROC change to STATUS."
   (message "git %s" (substring status 0 -1)))
 
+(defun gac--commit-msg (filename)
+  "Get a commit message.
+
+Default to FILENAME."
+  (let ((relative-filename (gac-relative-file-name filename)))
+    (if (not gac-ask-for-summary-p)
+        relative-filename
+      (read-string "Summary: " nil nil relative-filename))))
+
 (defun gac-commit ()
   "Commit the current buffer's file to git."
   (let* ((filename (buffer-file-name))
-         (relative-filename
-          (gac-relative-file-name filename)))
+         (commit-msg (gac--commit-msg filename)))
     (shell-command
-     (concat "git add " filename
-             " && git commit -m '" relative-filename "'"))))
+     (concat "git add " filename " && git commit -m '" commit-msg "'"))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
