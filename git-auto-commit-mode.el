@@ -107,7 +107,7 @@ Default to FILENAME."
   (let* ((filename (buffer-file-name))
          (commit-msg (gac--commit-msg filename)))
     (shell-command
-     (concat "git add " filename " && git commit -m '" commit-msg "'"))))
+     (concat "git add '" filename "' && git commit -m '" commit-msg "'"))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
