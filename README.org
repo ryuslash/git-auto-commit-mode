@@ -6,6 +6,9 @@
   git-auto-commit-mode - Emacs minor mode to automatically commit (and
   push) a git repository.
 
+  [[http://melpa.org/#/git-auto-commit-mode][file:http://melpa.org/packages/git-auto-commit-mode-badge.svg]]
+  [[http://stable.melpa.org/#/git-auto-commit-mode][file:http://stable.melpa.org/packages/git-auto-commit-mode-badge.svg]]
+
 * SYNOPSIS
 
   =M-x git-auto-commit-mode <RET>=
