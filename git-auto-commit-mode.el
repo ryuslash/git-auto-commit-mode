@@ -108,7 +108,7 @@ Default to FILENAME."
          (commit-msg (gac--commit-msg (buffer-file-name)))
 	 (default-directory (file-name-directory (buffer-file-name))))
     (shell-command
-     (concat "git add " (shell-quote-argument (convert-standard-filename filename)) " && git commit -m \"" commit-msg "\""))))
+     (concat "git add " (shell-quote-argument (convert-standard-filename filename)) " && git commit -m " (shell-quote-argument commit-msg)))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
