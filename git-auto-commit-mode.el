@@ -104,11 +104,14 @@ Default to FILENAME."
 
 (defun gac-commit ()
   "Commit the current buffer's file to git."
-  (let* ((filename (file-name-nondirectory (buffer-file-name)))
-         (commit-msg (gac--commit-msg (buffer-file-name)))
-	 (default-directory (file-name-directory (buffer-file-name))))
+  (let* ((buffer-file (buffer-file-name))
+         (filename (convert-standard-filename
+                    (file-name-nondirectory buffer-file)))
+         (commit-msg (gac--commit-msg buffer-file))
+         (default-directory (file-name-directory buffer-file)))
     (shell-command
-     (concat "git add " (shell-quote-argument (convert-standard-filename filename)) " && git commit -m " (shell-quote-argument commit-msg)))))
+     (concat "git add " (shell-quote-argument filename)
+             " && git commit -m " (shell-quote-argument commit-msg)))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
