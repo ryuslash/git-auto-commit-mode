@@ -1,4 +1,12 @@
 # -*- mode: org; -*-
+#+STARTUP: showall
+
+* v4.4.0
+
+  - Support Windows paths using =convert-standard-filename=.
+  - Properly escape command-line arguments when calling git with
+    =shell-quote-argument=.
+  - Explicitly bind =default-directory= when calling git.
 
 * v4.3.2
 
