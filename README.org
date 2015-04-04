@@ -75,3 +75,7 @@
        not git-auto-commit-mode should try to push the git
        repository's ~HEAD~ to its default upstream. Setting up the
        upstream is the user's responsibility.
+
+  - gac-ask-for-summary-p :: A boolean value indicating whether or not
+       git-auto-commit-mode should ask the user for a commit message
+       every time a commit is made.
