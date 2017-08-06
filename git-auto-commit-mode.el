@@ -116,7 +116,7 @@ STRING is the output line from PROC."
     (shell-command
      (concat "git add " (shell-quote-argument filename)
              gac-shell-and
-             "git commit -m " (shell-quote-argument commit-msg)))))
+             "git commit --allow-empty-message -m " (shell-quote-argument commit-msg)))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
