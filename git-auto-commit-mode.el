@@ -64,6 +64,11 @@ If non-nil a git push will be executed after each commit."
   :group 'git-auto-commit-mode
   :type 'function)
 
+(defcustom gac-allow-empty-message nil
+  "Whether to allow empty Git messages or not."
+  :group 'git-auto-commit-mode
+  :type 'boolean)
+
 (defun gac-relative-file-name (filename)
   "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
@@ -116,7 +121,9 @@ STRING is the output line from PROC."
     (shell-command
      (concat "git add " (shell-quote-argument filename)
              gac-shell-and
-             "git commit --allow-empty-message -m " (shell-quote-argument commit-msg)))))
+             "git commit "
+	     (if gac-allow-empty-message "--allow-empty-message") " -m "
+	     (shell-quote-argument commit-msg)))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
