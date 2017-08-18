@@ -58,6 +58,17 @@ If non-nil a git push will be executed after each commit."
   :group 'git-auto-commit-mode
   :type 'string)
 
+(defcustom gac-commit-message-function
+  (lambda (path) (if gac-ask-for-summary-p (read-string "Summary:" nil nil path) path))
+  "Return a Git commit message based on PATH to be commited."
+  :group 'git-auto-commit-mode
+  :type 'function)
+
+(defcustom gac-allow-empty-message nil
+  "Whether to allow empty Git messages or not."
+  :group 'git-auto-commit-mode
+  :type 'boolean)
+
 (defun gac-relative-file-name (filename)
   "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
@@ -100,26 +111,19 @@ STRING is the output line from PROC."
   "Report PROC change to STATUS."
   (message "git %s" (substring status 0 -1)))
 
-(defun gac--commit-msg (filename)
-  "Get a commit message.
-
-Default to FILENAME."
-  (let ((relative-filename (gac-relative-file-name filename)))
-    (if (not gac-ask-for-summary-p)
-        relative-filename
-      (read-string "Summary: " nil nil relative-filename))))
-
 (defun gac-commit ()
   "Commit the current buffer's file to git."
   (let* ((buffer-file (buffer-file-name))
          (filename (convert-standard-filename
                     (file-name-nondirectory buffer-file)))
-         (commit-msg (gac--commit-msg buffer-file))
+         (commit-msg (funcall gac-commit-message-function (gac-relative-file-name buffer-file)))
          (default-directory (file-name-directory buffer-file)))
     (shell-command
      (concat "git add " (shell-quote-argument filename)
              gac-shell-and
-             "git commit -m " (shell-quote-argument commit-msg)))))
+             "git commit "
+	     (if gac-allow-empty-message "--allow-empty-message") " -m "
+	     (shell-quote-argument commit-msg)))))
 
 (defun gac-push ()
   "Push commits to the current upstream.
