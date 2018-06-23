@@ -29,7 +29,14 @@
 ;; When `gac-automatically-push-p' is non-nil, it also tries to push
 ;; to the current upstream.
 
+;; When `gac-debounce-interval' is non-nil and set to a number
+;; representing seconds, it will only perform Git actions at that
+;; interval. That way, repeatedly saving a file will not hammer the
+;; Git repository.
+
 ;;; Code:
+
+(require 'cl)
 
 (defgroup git-auto-commit-mode nil
   "Customization options for `git-auto-commit-mode'."
@@ -57,6 +64,15 @@ If non-nil a git push will be executed after each commit."
   :tag "Join shell commands"
   :group 'git-auto-commit-mode
   :type 'string)
+
+(defcustom gac-debounce-interval nil
+  "Debounce automatic commits to avoid hammering Git.
+
+If non-nil a commit will be scheduled to occur that many seconds in the future. Note that this uses Emacs timer functionality, and is subject to its limitations."
+  :tag "Debounce to only make one commit this many seconds."
+  :group 'git-auto-commit-mode
+  :type 'fixnum)
+(make-variable-buffer-local 'gac-debounce-interval)
 
 (defun gac-relative-file-name (filename)
   "Find the path to FILENAME relative to the git directory."
@@ -109,34 +125,66 @@ Default to FILENAME."
         relative-filename
       (read-string "Summary: " nil nil relative-filename))))
 
-(defun gac-commit ()
+(defun gac-commit (actual-buffer)
   "Commit the current buffer's file to git."
-  (let* ((buffer-file (buffer-file-name))
-         (filename (convert-standard-filename
-                    (file-name-nondirectory buffer-file)))
-         (commit-msg (gac--commit-msg buffer-file))
-         (default-directory (file-name-directory buffer-file)))
-    (shell-command
-     (concat "git add " (shell-quote-argument filename)
-             gac-shell-and
-             "git commit -m " (shell-quote-argument commit-msg)))))
+  (with-current-buffer (or actual-buffer (current-buffer))
+    (let* ((buffer-file (buffer-file-name))
+           (filename (convert-standard-filename
+                      (file-name-nondirectory buffer-file)))
+           (commit-msg (gac--commit-msg buffer-file))
+           (default-directory (file-name-directory buffer-file)))
+      (shell-command
+       (concat "git add " (shell-quote-argument filename)
+               " && git commit -m " (shell-quote-argument commit-msg))))))
 
-(defun gac-push ()
+(defun gac-push (actual-buffer)
   "Push commits to the current upstream.
 
 This doesn't check or ask for a remote, so the correct remote
 should already have been set up."
-  (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
-    (set-process-sentinel proc 'gac-process-sentinel)
-    (set-process-filter proc 'gac-process-filter)))
+  (with-current-buffer (or actual-buffer (current-buffer))
+    (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
+      (set-process-sentinel proc 'gac-process-sentinel)
+      (set-process-filter proc 'gac-process-filter))))
+
+(setq gac--debounce-timers (make-hash-table :test #'equal))
+
+(defun gac--debounced-save ()
+  (lexical-let* ((actual-buffer (current-buffer))
+                 (current-buffer-debounce-timer (gethash actual-buffer gac--debounce-timers)))
+    (unless current-buffer-debounce-timer
+      (puthash actual-buffer
+               (run-at-time gac-debounce-interval nil
+                            (lambda (actual-buffer)
+                              (gac--after-save actual-buffer))
+                            actual-buffer)
+               gac--debounce-timers))))
+
+(defun gac--after-save (&optional actual-buffer)
+  (let ((actual-buffer (or actual-buffer (current-buffer))))
+    (unwind-protect
+        (when (buffer-live-p actual-buffer)
+          (gac-commit actual-buffer)
+          (when gac-automatically-push-p
+            (gac-push actual-buffer)))
+      (remhash actual-buffer gac--debounce-timers))))
+
+(defun gac-kill-buffer-hook ()
+  (when (and gac-debounce-interval
+             gac--debounce-timers
+             (gethash (current-buffer) gac--debounce-timers))
+    (gac--after-save)))
+
+(add-hook 'kill-buffer-hook #'gac-kill-buffer-hook)
 
 (defun gac-after-save-func ()
   "Commit the current file.
 
 When `gac-automatically-push-p' is non-nil also push."
-  (gac-commit)
-  (when gac-automatically-push-p
-    (gac-push)))
+
+  (if gac-debounce-interval
+      (gac--debounced-save)
+    (gac--after-save)))
 
 ;;;###autoload
 (define-minor-mode git-auto-commit-mode
