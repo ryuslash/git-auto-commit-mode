@@ -56,6 +56,39 @@ If non-nil a git push will be executed after each commit."
   :group 'git-auto-commit-mode
   :type 'boolean)
 
+(defcustom gac-loaded-commit nil
+  "Git commit in the buffer when it was loaded.
+
+DO NOT MODIFY - used to ensure that the saved file doesn't conflict with
+changes made since the current file was loaded."
+  :tag "Current commit"
+  :group 'git-auto-commit-mode
+  :type 'string
+  :risky t)
+(make-variable-buffer-local 'gac-loaded-commit)
+
+(defcustom gac-before-save-branch nil
+  "Git branch active immediately before a file is saved.
+
+DO NOT MODIFY - used to ensure that the saved file doesn't conflict with
+changes made since the current file was loaded."
+  :tag "Current commit"
+  :group 'git-auto-commit-mode
+  :type 'string
+  :risky t)
+(make-variable-buffer-local 'gac-before-save-branch)
+
+(defcustom gac-merge-branch nil
+  "Merge branch used when saving.
+
+DO NOT MODIFY - used to ensure that the saved file doesn't conflict with
+changes made since the current file was loaded."
+  :tag "Current commit"
+  :group 'git-auto-commit-mode
+  :type 'string
+  :risky t)
+(make-variable-buffer-local 'gac-merge-branch)
+
 (defcustom gac-ask-for-summary-p nil
   "Ask the user for a short summary each time a file is committed?"
   :tag "Ask for a summary on each commit"
@@ -166,6 +199,9 @@ Default to FILENAME."
     (replace-regexp-in-string "\n\\'" ""
         (gac--shell-command-to-string-throw "git rev-parse --verify HEAD"))))
 
+(defun gac--load-current-commit ()
+  (setq-local gac-loaded-commit (gac--current-commit)))
+
 (defun gac--current-branch ()
   "Return the current Git branch."
   (let* ((buffer-file (buffer-file-name))
@@ -208,6 +244,17 @@ Standard error is inserted into a temp buffer if it's generated."
                      rv command)))
         (delete-file err-file)))))
 
+(defun gac-checkout-merge-branch ()
+  "Create and check out a merge branch."
+  (setq-local gac-before-save-branch (gac--current-branch))
+  (setq-local gac-merge-branch (format "gac-merge-%d" (float-time)))
+  (let* ((buffer-file (buffer-file-name))
+         (default-directory (file-name-directory buffer-file)))
+    (gac--shell-command-throw
+     (format "git checkout -b %s %s"
+             (shell-quote-argument gac-merge-branch)
+             (shell-quote-argument gac-before-save-branch)))))
+
 (defun gac-commit (buffer)
   "Commit the current buffer's file to git."
   (let* ((buffer-file (buffer-file-name buffer))
@@ -219,6 +266,27 @@ Standard error is inserted into a temp buffer if it's generated."
      (concat "git add " gac-add-additional-flag " " (shell-quote-argument filename)
              gac-shell-and
              "git commit -m " (shell-quote-argument commit-msg)))))
+
+(defun gac-merge (buffer)
+  "Merge gac-merge-branch back into gac-before-save-branch."
+  (let* ((buffer-file (buffer-file-name))
+         (default-directory (file-name-directory buffer-file)))
+    (gac--shell-command-throw
+     (concat (format "git checkout %s"
+                     (shell-quote-argument gac-before-save-branch))
+             gac-shell-and
+             (format "git merge -m %s %s"
+                     (shell-quote-argument
+                      (format "Merge branch '%s'"
+                              gac-merge-branch))
+                     (shell-quote-argument gac-merge-branch))
+             gac-shell-and
+             (format "git branch -d %s"
+                     (shell-quote-argument gac-merge-branch))))
+    ;; Reset variables
+    (setq-local gac-before-save-branch nil)
+    (setq-local gac-merge-branch nil)
+    (gac--load-current-commit)))
 
 (defun gac-push (buffer)
   "Push commits to the current upstream.
@@ -271,6 +339,7 @@ should already have been set up."
                           (not (gac--buffer-is-tracked buffer)))
                      (gac--buffer-has-changes buffer)))
         (gac-commit buffer)
+	(gac-merge buffer)
         (with-current-buffer buffer
           ;; with-current-buffer required here because gac-automatically-push-p
           ;; is buffer-local
@@ -286,6 +355,14 @@ should already have been set up."
 
 (add-hook 'kill-buffer-hook #'gac-kill-buffer-hook)
 
+(defun gac-find-file-func ()
+  "Store the current commit."
+  (gac--load-current-commit))
+
+(defun gac-before-save-func ()
+  "Create and check out a merge branch."
+  (gac-checkout-merge-branch))
+
 (defun gac-after-save-func ()
   "Commit the current file.
 
@@ -299,9 +376,15 @@ When `gac-automatically-push-p' is non-nil also push."
   "Automatically commit any changes made when saving with this
 mode turned on and optionally push them too."
   :lighter " ga"
-  (if git-auto-commit-mode
-      (add-hook 'after-save-hook 'gac-after-save-func t t)
-    (remove-hook 'after-save-hook 'gac-after-save-func t)))
+  (cond (git-auto-commit-mode
+         (gac--load-current-commit)
+         (add-hook 'find-file-hook 'gac-find-file-func t t)
+         (add-hook 'before-save-hook 'gac-before-save-func t t)
+         (add-hook 'after-save-hook 'gac-after-save-func t t))
+        (t
+         (remove-hook 'find-file-hook 'gac-find-file-func t)
+         (remove-hook 'before-save-hook 'gac-before-save-func t)
+         (remove-hook 'after-save-hook 'gac-after-save-func t))))
 
 (provide 'git-auto-commit-mode)
 
