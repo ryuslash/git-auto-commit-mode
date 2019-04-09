@@ -107,7 +107,7 @@ It can be:
   "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
           (replace-regexp-in-string
-           "\n+$" "" (shell-command-to-string
+           "\n+$" "" (gac--shell-command-to-string-throw
                       "git rev-parse --show-toplevel")))
          (relative-file-name
           (replace-regexp-in-string
@@ -159,6 +159,55 @@ Default to FILENAME."
         (or gac-default-message relative-filename)
       (read-string "Summary: " nil nil relative-filename))))
 
+(defun gac--current-commit ()
+  "Return the current Git commit."
+  (let* ((buffer-file (buffer-file-name))
+         (default-directory (file-name-directory buffer-file)))
+    (replace-regexp-in-string "\n\\'" ""
+        (gac--shell-command-to-string-throw "git rev-parse --verify HEAD"))))
+
+(defun gac--current-branch ()
+  "Return the current Git branch."
+  (let* ((buffer-file (buffer-file-name))
+         (default-directory (file-name-directory buffer-file)))
+    (replace-regexp-in-string "\n\\'" ""
+        (gac--shell-command-to-string-throw "git symbolic-ref --short HEAD"))))
+
+(defun gac--shell-command-throw (command)
+  "Run shell command, but raise a lisp error if the command returns nonzero.
+
+Output and error printed to a temporary buffer."
+  (let* ((buf (get-buffer-create "*gac shell command*"))
+         (rv (call-process-shell-command command nil buf)))
+    (unless (eql 0 rv)
+      (error (concat "gac--shell-command-throw: "
+                     "Exit code %d from command: %s"
+                     rv command)))))
+
+(defun gac--shell-command-to-string-throw (command)
+  "Run shell command and return standard output as string.
+but raise a lisp error if the command returns nonzero.
+
+Standard error is inserted into a temp buffer if it's generated."
+  (with-output-to-string
+    (let ((err-file (make-temp-file "gac")))
+      (unwind-protect
+          (let* ((rv (call-process-shell-command
+                      command nil (list standard-output err-file)))
+                 (err-string (with-temp-buffer
+                               (insert-file-contents err-file)
+                               (buffer-string))))
+            (when (not (string= "" err-string))
+              (with-current-buffer-window
+               "*gac shell command*" nil nil
+               (insert err-string))
+              (display-message-or-buffer err-string))
+            (unless (eql 0 rv)
+              (error (concat "gac--shell-command-to-string-throw: "
+                             "Exit code %d from command: %s")
+                     rv command)))
+        (delete-file err-file)))))
+
 (defun gac-commit (buffer)
   "Commit the current buffer's file to git."
   (let* ((buffer-file (buffer-file-name buffer))
@@ -166,7 +215,7 @@ Default to FILENAME."
                     (file-name-nondirectory buffer-file)))
          (commit-msg (gac--commit-msg buffer-file))
          (default-directory (file-name-directory buffer-file)))
-    (shell-command
+    (gac--shell-command-throw
      (concat "git add " gac-add-additional-flag " " (shell-quote-argument filename)
              gac-shell-and
              "git commit -m " (shell-quote-argument commit-msg)))))
