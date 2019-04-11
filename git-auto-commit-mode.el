@@ -377,10 +377,11 @@ When `gac-automatically-push-p' is non-nil also push."
 mode turned on and optionally push them too."
   :lighter " ga"
   (cond (git-auto-commit-mode
-         (gac--load-current-commit)
-         (add-hook 'find-file-hook 'gac-find-file-func t t)
-         (add-hook 'before-save-hook 'gac-before-save-func t t)
-         (add-hook 'after-save-hook 'gac-after-save-func t t))
+         (unless (null (buffer-file-name))
+           (gac--load-current-commit)
+           (add-hook 'find-file-hook 'gac-find-file-func t t)
+           (add-hook 'before-save-hook 'gac-before-save-func t t)
+           (add-hook 'after-save-hook 'gac-after-save-func t t)))
         (t
          (remove-hook 'find-file-hook 'gac-find-file-func t)
          (remove-hook 'before-save-hook 'gac-before-save-func t)
