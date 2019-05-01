@@ -217,8 +217,8 @@ Output and error printed to a temporary buffer."
          (rv (call-process-shell-command command nil buf)))
     (unless (eql 0 rv)
       (error (concat "gac--shell-command-throw: "
-                     "Exit code %d from command: %s"
-                     rv command)))))
+                     "Exit code %d from command: %s")
+             rv command))))
 
 (defun gac--shell-command-to-string-throw (command)
   "Run shell command and return standard output as string.
