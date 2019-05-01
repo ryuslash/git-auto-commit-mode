@@ -265,6 +265,10 @@ Standard error is inserted into a temp buffer if it's generated."
     (gac--shell-command-throw
      (concat "git add " gac-add-additional-flag " " (shell-quote-argument filename)
              gac-shell-and
+             ;; Check if working directory is clean before attempting to
+             ;; commit; if it is, `git commit` will exit with exit code 1.
+             "{ git diff --exit-code && git diff --cached --exit-code; }"
+             "||"
              "git commit -m " (shell-quote-argument commit-msg)))))
 
 (defun gac-merge (buffer)
