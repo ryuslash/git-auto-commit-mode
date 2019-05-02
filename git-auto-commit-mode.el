@@ -341,7 +341,11 @@ should already have been set up."
       (when (and (buffer-live-p buffer)
                  (or (and gac-automatically-add-new-files-p
                           (not (gac--buffer-is-tracked buffer)))
-                     (gac--buffer-has-changes buffer)))
+                     (gac--buffer-has-changes buffer))
+                 (string=
+		   "true\n"
+                   (gac--shell-command-to-string-throw
+                    "git rev-parse --is-inside-work-tree")))
         (gac-commit buffer)
 	(gac-merge buffer)
         (with-current-buffer buffer
