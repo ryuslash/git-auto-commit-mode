@@ -180,7 +180,6 @@ should already have been set up."
   "Commit the current file.
 
 When `gac-automatically-push-p' is non-nil also push."
-
   (if gac-debounce-interval
       (gac--debounced-save)
     (gac--after-save (current-buffer))))
