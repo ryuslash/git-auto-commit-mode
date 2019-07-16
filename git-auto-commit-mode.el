@@ -143,7 +143,11 @@ Default to FILENAME."
 
 This doesn't check or ask for a remote, so the correct remote
 should already have been set up."
-  (with-current-buffer buffer
+  ;; gac-push is currently only called from gac--after-save, where it is wrapped
+  ;; in with-current-buffer, which should already take care of
+  ;; default-directory. The explicit binding here is defensive, in case gac-push
+  ;; starts being used elsewhere.
+  (let ((default-directory (file-name-directory (buffer-file-name buffer))))
     (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
       (set-process-sentinel proc 'gac-process-sentinel)
       (set-process-filter proc 'gac-process-filter))))
@@ -164,8 +168,11 @@ should already have been set up."
   (unwind-protect
       (when (buffer-live-p buffer)
         (gac-commit buffer)
-        (when gac-automatically-push-p
-          (gac-push buffer)))
+        (with-current-buffer buffer
+          ;; with-current-buffer required here because gac-automatically-push-p
+          ;; is buffer-local
+          (when gac-automatically-push-p
+            (gac-push buffer))))
     (remhash buffer gac--debounce-timers)))
 
 (defun gac-kill-buffer-hook ()
