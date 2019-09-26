@@ -209,6 +209,12 @@ Default to FILENAME."
     (replace-regexp-in-string "\n\\'" ""
         (gac--shell-command-to-string-throw "git symbolic-ref --short HEAD"))))
 
+(defun gac--buffer-file-tracked ()
+  "Is the current buffer's file tracked in Git?"
+  (eq 0
+      (call-process "git" nil nil nil "ls-files" "--error-unmatch"
+                    (buffer-file-name))))
+
 (defun gac--shell-command-throw (command)
   "Run shell command, but raise a lisp error if the command returns nonzero.
 
@@ -345,7 +351,8 @@ should already have been set up."
                  (string=
 		   "true\n"
                    (gac--shell-command-to-string-throw
-                    "git rev-parse --is-inside-work-tree")))
+                    "git rev-parse --is-inside-work-tree"))
+	         (gac--buffer-file-tracked))
         (gac-commit buffer)
 	(gac-merge buffer)
         (with-current-buffer buffer
@@ -369,7 +376,8 @@ should already have been set up."
 
 (defun gac-before-save-func ()
   "Create and check out a merge branch."
-  (gac-checkout-merge-branch))
+  (when (gac--buffer-file-tracked)
+    (gac-checkout-merge-branch)))
 
 (defun gac-after-save-func ()
   "Commit the current file.
