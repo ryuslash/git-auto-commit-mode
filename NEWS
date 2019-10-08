@@ -1,6 +1,12 @@
 # -*- mode: org; -*-
 #+STARTUP: showall
 
+* v4.5.0
+
+  - Support the fish shell through the ~gac-shell-and~ option.
+  - Support buffering commits within a certain time interval using the
+    ~gac-debounce-interval~.
+
 * v4.4.0
 
   - Support Windows paths using =convert-standard-filename=.
