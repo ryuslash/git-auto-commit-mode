@@ -1,6 +1,12 @@
 # -*- mode: org; -*-
 #+STARTUP: showall
 
+* Unreleased
+
+  - Only try to commit when changes have been discovered in the file. By
+    extension git-auto-commit-mode won't ask for a summary to a commit that it
+    won't make.
+
 * v4.5.0
 
   - Support the fish shell through the ~gac-shell-and~ option.
