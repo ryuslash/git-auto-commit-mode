@@ -77,8 +77,11 @@
        upstream is the user's responsibility.
 
   - gac-ask-for-summary-p :: A boolean value indicating whether or not
-       git-auto-commit-mode should ask the user for a commit message
-       every time a commit is made.
+       git-auto-commit-mode should ask the user for a commit message every time
+       a commit is made. *Note*: Since the summary is asked for before the commit,
+       but /after/ the file has been saved, pressing ~C-g~ while entering the
+       Summary will stop the commit from being made, but not the file from being
+       saved.
 
   - gac-shell-and :: A string that can be used to change how the shell combines
                      commands. The default " && " is good for bash-like shells,
