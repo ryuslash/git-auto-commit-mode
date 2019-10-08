@@ -79,3 +79,11 @@
   - gac-ask-for-summary-p :: A boolean value indicating whether or not
        git-auto-commit-mode should ask the user for a commit message
        every time a commit is made.
+
+  - gac-shell-and :: A string that can be used to change how the shell combines
+                     commands. The default " && " is good for bash-like shells,
+                     but " ; and " would be used for fish, for example.
+
+  - gac-debounce-interval :: A number specifying a buffer between automatic
+       commits in seconds. Wait with making an actual commit until this number
+       of seconds elapses.
