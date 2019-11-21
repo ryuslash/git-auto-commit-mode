@@ -81,8 +81,8 @@ is subject to its limitations."
 It can be:
 - nil to use the default FILENAME
 - a string which is used
-- a function returning a string, called without argument in the
-  current buffer, the result being used as message
+- a function returning a string, called with FILENAME as
+  argument, the result being used as message
 "
   :tag "Default commit message"
   :group 'git-auto-commit-mode
