@@ -82,7 +82,7 @@ It can be:
 - nil to use the default FILENAME
 - a string which is used
 - a function returning a string, called with FILENAME as
-  argument, the result being used as message
+  argument, in which case the result is used as commit message
 "
   :tag "Default commit message"
   :group 'git-auto-commit-mode
