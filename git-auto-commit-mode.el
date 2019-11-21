@@ -140,7 +140,7 @@ Default to FILENAME."
     (if (not gac-ask-for-summary-p)
         (if gac-default-message
             (if (functionp gac-default-message)
-                (gac-default-message)
+                (funcall gac-default-message filename)
               gac-default-message)
           relative-filename)
         (or gac-default-message relative-filename)
