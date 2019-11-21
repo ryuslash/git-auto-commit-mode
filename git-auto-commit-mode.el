@@ -138,6 +138,11 @@ STRING is the output line from PROC."
 Default to FILENAME."
   (let ((relative-filename (gac-relative-file-name filename)))
     (if (not gac-ask-for-summary-p)
+        (if gac-default-message
+            (if (functionp gac-default-message)
+                (gac-default-message)
+              gac-default-message)
+          relative-filename)
         (or gac-default-message relative-filename)
       (read-string "Summary: " nil nil relative-filename))))
 
