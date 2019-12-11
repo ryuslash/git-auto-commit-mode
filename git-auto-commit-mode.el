@@ -164,6 +164,15 @@ should already have been set up."
                             actual-buffer)
                gac--debounce-timers))))
 
+(defun gac--buffer-is-tracked (buffer)
+  "Check to see if BUFFER’s file is tracked in git."
+  (let ((file-name (convert-standard-filename
+                    (file-name-nondirectory
+                     (buffer-file-name buffer)))))
+    (not (string=
+          (shell-command-to-string (concat "git ls-files " file-name))
+          ""))))
+
 (defun gac--buffer-has-changes (buffer)
   "Check to see if there is any change in BUFFER."
   (let ((file-name (convert-standard-filename
@@ -176,7 +185,8 @@ should already have been set up."
 (defun gac--after-save (buffer)
   (unwind-protect
       (when (and (buffer-live-p buffer)
-                 (gac--buffer-has-changes buffer))
+                 (or (not (gac--buffer-is-tracked buffer))
+                     (gac--buffer-has-changes buffer)))
         (gac-commit buffer)
         (with-current-buffer buffer
           ;; with-current-buffer required here because gac-automatically-push-p
