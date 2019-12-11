@@ -50,6 +50,12 @@ If non-nil a git push will be executed after each commit."
   :risky t)
 (make-variable-buffer-local 'gac-automatically-push-p)
 
+(defcustom gac-automatically-add-new-files-p t
+  "Should new (untracked) files automatically be committed to the repo?"
+  :tag "Automatically add new files"
+  :group 'git-auto-commit-mode
+  :type 'boolean)
+
 (defcustom gac-ask-for-summary-p nil
   "Ask the user for a short summary each time a file is committed?"
   :tag "Ask for a summary on each commit"
@@ -185,7 +191,8 @@ should already have been set up."
 (defun gac--after-save (buffer)
   (unwind-protect
       (when (and (buffer-live-p buffer)
-                 (or (not (gac--buffer-is-tracked buffer))
+                 (or (and gac-automatically-add-new-files-p
+                          (not (gac--buffer-is-tracked buffer)))
                      (gac--buffer-has-changes buffer)))
         (gac-commit buffer)
         (with-current-buffer buffer

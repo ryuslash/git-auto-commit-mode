@@ -28,21 +28,41 @@
 (require 'git-auto-commit-mode)
 
 (describe "New files"
-  (it "Should be added to git"
-    (let* ((temp-dir (make-temp-file "gac-" t))
-           (temp-file (expand-file-name "test" temp-dir))
-           (default-directory temp-dir))
-      (unwind-protect
-          (progn
-            (shell-command "git init")
-            (let ((buffer (find-file-noselect temp-file)))
-              (with-current-buffer buffer
-                (git-auto-commit-mode)
-                (insert "test")
-                (save-buffer)))
-            (expect (shell-command-to-string "git log --format=format:%s")
-                    :to-match (rx string-start "test" string-end)))
-        (delete-directory temp-dir t)))))
+  (describe "When ‘gac-automatically-add-new-files’ is t"
+    (it "Should be added to git"
+      (let* ((gac-automatically-add-new-files-p t)
+             (temp-dir (make-temp-file "gac-" t))
+             (temp-file (expand-file-name "test" temp-dir))
+             (default-directory temp-dir))
+        (unwind-protect
+            (progn
+              (shell-command "git init")
+              (let ((buffer (find-file-noselect temp-file)))
+                (with-current-buffer buffer
+                  (git-auto-commit-mode)
+                  (insert "test")
+                  (save-buffer)))
+              (expect (shell-command-to-string "git log --format=format:%s")
+                      :to-match (rx string-start "test" string-end)))
+          (delete-directory temp-dir t)))))
+
+  (describe "When ‘gac-automatically-add-new-files’ is nil"
+    (it "Shouldn’t be added to git"
+      (let* ((gac-automatically-add-new-files-p nil)
+             (temp-dir (make-temp-file "gac-" t))
+             (temp-file (expand-file-name "test" temp-dir))
+             (default-directory temp-dir))
+        (unwind-protect
+            (progn
+              (shell-command "git init")
+              (let ((buffer (find-file-noselect temp-file)))
+                (with-current-buffer buffer
+                  (git-auto-commit-mode)
+                  (insert "test")
+                  (save-buffer)))
+              (expect (shell-command-to-string "git log --format=format:%s")
+                      :not :to-match (rx string-start "test" string-end)))
+          (delete-directory temp-dir t))))))
 
 (provide 'git-auto-commit-mode-tests)
 ;;; git-auto-commit-mode-tests.el ends here

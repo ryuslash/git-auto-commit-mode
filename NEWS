@@ -6,6 +6,8 @@
   - Only try to commit when changes have been discovered in the file. By
     extension git-auto-commit-mode won't ask for a summary to a commit that it
     won't make.
+  - Add option to prevent new (untracked) files from being added to the git
+    repository automatically, =gac-automatically-add-new-files-p=.
 
 * v4.5.0
 
