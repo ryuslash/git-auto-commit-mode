@@ -71,26 +71,27 @@
   git-auto-commit-mode is a simple mode, as such it offers little
   customization.
 
-  - =gac-automatically-push-p= :: A boolean value indicating whether or
-       not git-auto-commit-mode should try to push the git
-       repository's ~HEAD~ to its default upstream. Setting up the
-       upstream is the user's responsibility.
+  - =gac-automatically-push-p= ::
+    A boolean value indicating whether or not git-auto-commit-mode should try to
+    push the git repository's ~HEAD~ to its default upstream. Setting up the
+    upstream is the user's responsibility.
 
   - =gac-automatically-add-new-files-p= ::
     A boolean value indicating whether or not git-auto-commit-mode should add
     new (untracked) files to the repository.
 
-  - =gac-ask-for-summary-p= :: A boolean value indicating whether or not
-       git-auto-commit-mode should ask the user for a commit message every time
-       a commit is made. *Note*: Since the summary is asked for before the commit,
-       but /after/ the file has been saved, pressing ~C-g~ while entering the
-       Summary will stop the commit from being made, but not the file from being
-       saved.
+  - =gac-ask-for-summary-p= ::
+    A boolean value indicating whether or not git-auto-commit-mode should ask
+    the user for a commit message every time a commit is made. *Note*: Since the
+    summary is asked for before the commit, but /after/ the file has been saved,
+    pressing ~C-g~ while entering the Summary will stop the commit from being
+    made, but not the file from being saved.
 
-  - =gac-shell-and= :: A string that can be used to change how the shell combines
-                     commands. The default " && " is good for bash-like shells,
-                     but " ; and " would be used for fish, for example.
+  - =gac-shell-and= ::
+    A string that can be used to change how the shell combines commands. The
+    default " && " is good for bash-like shells, but " ; and " would be used for
+    fish, for example.
 
-  - =gac-debounce-interval= :: A number specifying a buffer between automatic
-       commits in seconds. Wait with making an actual commit until this number
-       of seconds elapses.
+  - =gac-debounce-interval= ::
+    A number specifying a buffer between automatic commits in seconds. Wait with
+    making an actual commit until this number of seconds elapses.
