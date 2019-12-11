@@ -49,6 +49,12 @@
 
 *** As a directory-local variable
 
+    Create a ~.dir-locals.el~ file in the directory where you want
+    git-auto-commit-mode to be enabled. This will also apply to any
+    subdirectories, so be careful. For more information see the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html#Directory-Variables][Per-Directory
+    Local Variables]] section in the Emacs manual. Then put one of the following
+    snippets of code in there:
+
     If you're using Emacs 24 or newer you should set an =eval= variable:
     #+BEGIN_EXAMPLE
       ((nil . ((eval git-auto-commit-mode 1))))
