@@ -69,6 +69,13 @@ If non-nil a git push will be executed after each commit."
   :group 'git-auto-commit-mode
   :type 'string)
 
+(defcustom gac-add-additional-flag ""
+       "Flag to add to the git add command."
+       :tag "git add flag"
+       :group 'git-auto-commit-mode
+       :type 'string)
+
+
 (defcustom gac-debounce-interval nil
   "Debounce automatic commits to avoid hammering Git.
 
@@ -140,7 +147,7 @@ Default to FILENAME."
          (commit-msg (gac--commit-msg buffer-file))
          (default-directory (file-name-directory buffer-file)))
     (shell-command
-     (concat "git add " (shell-quote-argument filename)
+     (concat "git add " gac-add-additional-flag " " (shell-quote-argument filename)
              gac-shell-and
              "git commit -m " (shell-quote-argument commit-msg)))))
 
