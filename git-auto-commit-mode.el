@@ -88,6 +88,21 @@ is subject to its limitations."
                  (const :tag "Off" nil)))
 (make-variable-buffer-local 'gac-debounce-interval)
 
+(defcustom gac-default-message nil
+  "Default message for automatic commits.
+
+It can be:
+- nil to use the default FILENAME
+- a string which is used
+- a function returning a string, called with FILENAME as
+  argument, in which case the result is used as commit message
+"
+  :tag "Default commit message"
+  :group 'git-auto-commit-mode
+  :type '(choice (string :tag "Commit message")
+                 (const :tag "Default: FILENAME" nil)
+                 (function :tag "Function")))
+
 (defun gac-relative-file-name (filename)
   "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
@@ -136,7 +151,12 @@ STRING is the output line from PROC."
 Default to FILENAME."
   (let ((relative-filename (gac-relative-file-name filename)))
     (if (not gac-ask-for-summary-p)
-        relative-filename
+        (if gac-default-message
+            (if (functionp gac-default-message)
+                (funcall gac-default-message filename)
+              gac-default-message)
+          relative-filename)
+        (or gac-default-message relative-filename)
       (read-string "Summary: " nil nil relative-filename))))
 
 (defun gac-commit (buffer)
