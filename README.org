@@ -94,8 +94,29 @@
     made, but not the file from being saved.
 
   - =gac-shell-and= ::
-    A string that can be used to change how the shell combines commands. The
+    A string that can be used to change how the shell combines commands like
+    ~CMD1 AND CMD2~, where CMD2 should only be run if CMD1 succeeds. The
     default " && " is good for bash-like shells, but " ; and " would be used for
+    fish, for example.
+
+  - =gac-shell-or= ::
+    A string that can be used to change how the shell combines commands like
+    ~CMD1 OR CMD2~, where CMD2 should only be run if CMD1 doesn't succeed. The
+    default " || " is good for bash-like shells, but " ; or " would be used for
+    fish, for example.
+
+  - =gac-shell-begin= ::
+    A string that can be used to change how the shell starts chains of commands
+    like ~BEGIN CMD1; CMD2 END~, where CMD1 and CMD2 are both run and where
+    the exit status of the chain is the exit status of CMD2. The default
+    " { " is good for bash-like shells, but " begin " would be used for
+    fish, for example.
+
+  - =gac-shell-end= ::
+    A string that can be used to change how the shell ends chains of commands
+    like ~BEGIN CMD1; CMD2 END~, where CMD1 and CMD2 are both run and where
+    the exit status of the chain is the exit status of CMD2. The default
+    " ; } " is good for bash-like shells, but " ; end " would be used for
     fish, for example.
 
   - =gac-debounce-interval= ::

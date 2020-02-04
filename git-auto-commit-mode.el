@@ -96,8 +96,35 @@ changes made since the current file was loaded."
   :type 'boolean)
 
 (defcustom gac-shell-and " && "
-  "How to join commands together in the shell. For fish shell,
-  you want to customise this to: \" ; and \" instead of the default."
+  "The syntax to use for CMD1 AND CMD2, where CMD2 should only be run if CMD1
+  is successful. For fish shell, you want to customise this to: \" ; and \"
+  instead of the default."
+  :tag "Join shell commands"
+  :group 'git-auto-commit-mode
+  :type 'string)
+
+(defcustom gac-shell-or " || "
+  "The syntax to use for CMD1 OR CMD2, where CMD2 should only be run if CMD1
+  is not successful. For fish shell, you want to customise this to: \" ; and \"
+  instead of the default."
+  :tag "Join shell commands"
+  :group 'git-auto-commit-mode
+  :type 'string)
+
+(defcustom gac-shell-begin " { "
+  "The syntax to use for BEGIN in BEGIN CMD1; CMD2; END, where CMD2 should be
+  run after CMD1 and the whole expression return the exit code of CMD2.
+  For fish shell, you want to customise this to: \" begin \"
+  instead of the default."
+  :tag "Join shell commands"
+  :group 'git-auto-commit-mode
+  :type 'string)
+
+(defcustom gac-shell-end " ; } "
+  "The syntax to use for END in BEGIN CMD1; CMD2 END, where CMD2 should be
+  run after CMD1 and the whole expression return the exit code of CMD2.
+  For fish shell, you want to customise this to: \" ; end \"
+  instead of the default."
   :tag "Join shell commands"
   :group 'git-auto-commit-mode
   :type 'string)
@@ -274,8 +301,12 @@ Standard error is inserted into a temp buffer if it's generated."
              gac-shell-and
              ;; Check if working directory is clean before attempting to
              ;; commit; if it is, `git commit` will exit with exit code 1.
-             "{ git diff --exit-code && git diff --cached --exit-code; }"
-             "||"
+             gac-shell-begin
+             "git diff --exit-code"
+             gac-shell-and
+             "git diff --cached --exit-code"
+             gac-shell-end
+             gac-shell-or
              "git commit -m " (shell-quote-argument commit-msg)))))
 
 (defun gac-merge (buffer)
