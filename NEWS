@@ -1,7 +1,7 @@
 # -*- mode: org; -*-
 #+STARTUP: showall
 
-* Unreleased
+* v4.6.0
 
   - Only try to commit when changes have been discovered in the file. By
     extension git-auto-commit-mode won't ask for a summary to a commit that it
