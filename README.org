@@ -101,3 +101,11 @@
   - =gac-debounce-interval= ::
     A number specifying a buffer between automatic commits in seconds. Wait with
     making an actual commit until this number of seconds elapses.
+
+  - =gac-add-additional-flag= ::
+    A string that can be used to add additional command line flags to the ~git
+    add~ command.
+
+  - =gac-commit-additional-flag= ::
+    A string that can be used to add additional command line flags to the ~git
+    commit~ command.
