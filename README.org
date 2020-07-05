@@ -109,3 +109,8 @@
   - =gac-commit-additional-flag= ::
     A string that can be used to add additional command line flags to the ~git
     commit~ command.
+
+  - =gac-silent-message-p= ::
+    A boolean value indicating whether to display the commit summary message,
+    which is usually displayed in the minibuffer. The default is ~nil~, meaning
+    that the summary would be displayed on every commit.
