@@ -64,5 +64,104 @@
                       :not :to-match (rx string-start "test" string-end)))
           (delete-directory temp-dir t))))))
 
+(describe "Getting a relative path"
+  (it "should return the file name for files in the project root"
+    (let* ((temp-dir (make-temp-file "gac-" t))
+           (temp-file (expand-file-name "test" temp-dir))
+           (default-directory temp-dir))
+      (unwind-protect
+          (progn
+            (shell-command "git init")
+            (let ((buffer (find-file-noselect temp-file)))
+              (with-current-buffer buffer
+                (git-auto-commit-mode)
+                (insert "test")
+                (save-buffer)))
+            (expect (gac-relative-file-name temp-file)
+                    :to-equal "test"))
+        (delete-directory temp-dir t))))
+
+  (it "should return the file name and directory name for nested files"
+    (let* ((temp-dir (make-temp-file "gac-" t))
+           (temp-file (expand-file-name "test/test.txt" temp-dir))
+           (default-directory temp-dir))
+      (mkdir (expand-file-name "test" temp-dir))
+      (unwind-protect
+          (progn
+            (shell-command "git init")
+            (let ((buffer (find-file-noselect temp-file)))
+              (with-current-buffer buffer
+                (git-auto-commit-mode)
+                (insert "test")
+                (save-buffer)))
+            (expect (gac-relative-file-name temp-file)
+                    :to-equal "test/test.txt"))
+        (delete-directory temp-dir t))))
+
+  (it "should handle ‘[]’ in the filename"
+    (let* ((temp-dir (make-temp-file "gac-" t))
+           (temp-file (expand-file-name "[test]-test.txt" temp-dir))
+           (default-directory temp-dir))
+      (unwind-protect
+          (progn
+            (shell-command "git init")
+            (let ((buffer (find-file-noselect temp-file)))
+              (with-current-buffer buffer
+                (git-auto-commit-mode)
+                (insert "test")
+                (save-buffer)))
+            (expect (gac-relative-file-name temp-file)
+                    :to-equal "[test]-test.txt"))
+        (delete-directory temp-dir t))))
+
+  (it "should handle ‘[]’ in the directory name"
+    (let* ((temp-dir (make-temp-file "gac-" t))
+           (temp-file (expand-file-name "[test]-test/testing.txt" temp-dir))
+           (default-directory temp-dir))
+      (mkdir (expand-file-name "[test]-test" temp-dir))
+      (unwind-protect
+          (progn
+            (shell-command "git init")
+            (let ((buffer (find-file-noselect temp-file)))
+              (with-current-buffer buffer
+                (git-auto-commit-mode)
+                (insert "test")
+                (save-buffer)))
+            (expect (gac-relative-file-name temp-file)
+                    :to-equal "[test]-test/testing.txt"))
+        (delete-directory temp-dir t))))
+
+  (it "should handle ‘[’ in the directory name"
+    (let* ((temp-dir (make-temp-file "gac-[test-" t))
+           (temp-file (expand-file-name "testing.txt" temp-dir))
+           (default-directory temp-dir))
+      (unwind-protect
+          (progn
+            (shell-command "git init")
+            (let ((buffer (find-file-noselect temp-file)))
+              (with-current-buffer buffer
+                (git-auto-commit-mode)
+                (insert "test")
+                (save-buffer)))
+            (expect (gac-relative-file-name temp-file)
+                    :to-equal "testing.txt"))
+        (delete-directory temp-dir t))))
+
+  (it "should handle ‘[’ in the file name"
+    (let* ((temp-dir (make-temp-file "gac-" t))
+           (temp-file (expand-file-name "[test-test.txt" temp-dir))
+           (default-directory temp-dir))
+      (unwind-protect
+          (progn
+            (shell-command "git init")
+            (let ((buffer (find-file-noselect temp-file)))
+              (with-current-buffer buffer
+                (git-auto-commit-mode)
+                (insert "test")
+                (save-buffer)))
+            (expect (gac-relative-file-name temp-file)
+                    :to-equal "[test-test.txt"))
+        (delete-directory temp-dir t)))))
+
 (provide 'git-auto-commit-mode-tests)
 ;;; git-auto-commit-mode-tests.el ends here

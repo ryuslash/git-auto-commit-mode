@@ -36,6 +36,8 @@
 
 ;;; Code:
 
+(require 'subr-x)
+
 (defgroup git-auto-commit-mode nil
   "Customization options for `git-auto-commit-mode'."
   :group 'external)
@@ -118,14 +120,9 @@ It can be:
 (defun gac-relative-file-name (filename)
   "Find the path to FILENAME relative to the git directory."
   (let* ((git-dir
-          (replace-regexp-in-string
-           "\n+$" "" (shell-command-to-string
-                      "git rev-parse --show-toplevel")))
-         (relative-file-name
-          (replace-regexp-in-string
-           "^/" "" (replace-regexp-in-string
-                    git-dir "" filename))))
-    relative-file-name))
+          (string-trim-right
+           (shell-command-to-string "git rev-parse --show-toplevel"))))
+    (file-relative-name filename git-dir)))
 
 (defun gac-password (proc string)
   "Ask the user for a password when necessary.
