@@ -27,6 +27,11 @@
 (require 'buttercup)
 (require 'git-auto-commit-mode)
 
+(defun gas-test-setup-git ()
+  (shell-command "git init")
+  (shell-command "git config user.email user@example.com")
+  (shell-command "git config user.name \"User Example\""))
+
 (describe "New files"
   (describe "When ‘gac-automatically-add-new-files’ is t"
     (it "Should be added to git"
@@ -36,7 +41,7 @@
              (default-directory temp-dir))
         (unwind-protect
             (progn
-              (shell-command "git init")
+              (gas-test-setup-git)
               (let ((buffer (find-file-noselect temp-file)))
                 (with-current-buffer buffer
                   (git-auto-commit-mode)
@@ -54,7 +59,7 @@
              (default-directory temp-dir))
         (unwind-protect
             (progn
-              (shell-command "git init")
+              (gas-test-setup-git)
               (let ((buffer (find-file-noselect temp-file)))
                 (with-current-buffer buffer
                   (git-auto-commit-mode)
@@ -71,7 +76,7 @@
            (default-directory temp-dir))
       (unwind-protect
           (progn
-            (shell-command "git init")
+            (gas-test-setup-git)
             (let ((buffer (find-file-noselect temp-file)))
               (with-current-buffer buffer
                 (git-auto-commit-mode)
@@ -88,7 +93,7 @@
       (mkdir (expand-file-name "test" temp-dir))
       (unwind-protect
           (progn
-            (shell-command "git init")
+            (gas-test-setup-git)
             (let ((buffer (find-file-noselect temp-file)))
               (with-current-buffer buffer
                 (git-auto-commit-mode)
@@ -104,7 +109,7 @@
            (default-directory temp-dir))
       (unwind-protect
           (progn
-            (shell-command "git init")
+            (gas-test-setup-git)
             (let ((buffer (find-file-noselect temp-file)))
               (with-current-buffer buffer
                 (git-auto-commit-mode)
@@ -121,7 +126,7 @@
       (mkdir (expand-file-name "[test]-test" temp-dir))
       (unwind-protect
           (progn
-            (shell-command "git init")
+            (gas-test-setup-git)
             (let ((buffer (find-file-noselect temp-file)))
               (with-current-buffer buffer
                 (git-auto-commit-mode)
@@ -137,7 +142,7 @@
            (default-directory temp-dir))
       (unwind-protect
           (progn
-            (shell-command "git init")
+            (gas-test-setup-git)
             (let ((buffer (find-file-noselect temp-file)))
               (with-current-buffer buffer
                 (git-auto-commit-mode)
@@ -153,7 +158,7 @@
            (default-directory temp-dir))
       (unwind-protect
           (progn
-            (shell-command "git init")
+            (gas-test-setup-git)
             (let ((buffer (find-file-noselect temp-file)))
               (with-current-buffer buffer
                 (git-auto-commit-mode)
