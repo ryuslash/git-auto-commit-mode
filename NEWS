@@ -1,6 +1,12 @@
 # -*- mode: org; -*-
 #+STARTUP: showall
 
+* v4.7.0
+
+  - Fix the URL package header, it was pointing at a non-existent page.
+  - Add user options =gac-commit-additional-flags=, and =gac-silent-message-p=.
+  - Fix an issue with having the =[= character somewhere in the path of the file.
+
 * v4.6.0
 
   - Only try to commit when changes have been discovered in the file. By
