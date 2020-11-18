@@ -114,3 +114,23 @@
     A boolean value indicating whether to display the commit summary message,
     which is usually displayed in the minibuffer. The default is ~nil~, meaning
     that the summary would be displayed on every commit.
+
+
+  To set any of these options, you can:
+
+  - Use the customization interface (~M-x customize-group git-auto-commit-mode~).
+  - Set the defaults in your Emacs initialization file using:
+    #+begin_src emacs-lisp
+      (setq-default gac-ask-for-summary-p t)
+    #+end_src
+  - Set values in a hook:
+    #+begin_src emacs-lisp
+      (defun set-my-settings ()
+        (setq gac-automatically-push-p t))
+
+      (add-hook 'org-mode-hook 'set-my-settings)
+    #+end_src
+  - Set values in a ~.dir-locals.el~ (see [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html#Directory-Variables][Per-Directory Local Variables]]):
+    #+begin_src emacs-lisp
+      ((nil . ((gac-shell-and . " ; and "))))
+    #+end_src
