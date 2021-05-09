@@ -122,7 +122,7 @@ It can be:
   (let* ((git-dir
           (string-trim-right
            (shell-command-to-string "git rev-parse --show-toplevel"))))
-    (file-relative-name filename git-dir)))
+    (file-relative-name (file-truename filename) (file-truename git-dir))))
 
 (defun gac-password (proc string)
   "Ask the user for a password when necessary.
