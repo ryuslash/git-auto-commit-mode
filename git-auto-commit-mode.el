@@ -29,6 +29,9 @@
 ;; When `gac-automatically-push-p' is non-nil, it also tries to push
 ;; to the current upstream.
 
+;; When `gac-automatically-pull-p' is non-nil, it also tries to pull
+;; from the current upstream.
+
 ;; When `gac-debounce-interval' is non-nil and set to a number
 ;; representing seconds, it will only perform Git actions at that
 ;; interval. That way, repeatedly saving a file will not hammer the
@@ -51,6 +54,16 @@ If non-nil a git push will be executed after each commit."
   :type 'boolean
   :risky t)
 (make-variable-buffer-local 'gac-automatically-push-p)
+
+(defcustom gac-automatically-pull-p nil
+  "Automatically pull before each commit.
+
+If non-nil a git pull will be executed before each commit."
+  :tag "Automatically pull"
+  :group 'git-auto-commit-mode
+  :type 'boolean
+  :risky t)
+(make-variable-buffer-local 'gac-automatically-pull-p)
 
 (defcustom gac-automatically-add-new-files-p t
   "Should new (untracked) files automatically be committed to the repo?"
@@ -197,6 +210,21 @@ should already have been set up."
       (set-process-sentinel proc 'gac-process-sentinel)
       (set-process-filter proc 'gac-process-filter))))
 
+(defun gac-pull (buffer)
+  "Pull commits from the current upstream.
+
+This doesn't check or ask for a remote, so the correct remote
+should already have been set up."
+  ;; gac-pull is currently only called from gac--after-save, where it is wrapped
+  ;; in with-current-buffer, which should already take care of
+  ;; default-directory. The explicit binding here is defensive, in case gac-pull
+  ;; starts being used elsewhere.
+  (let ((default-directory (file-name-directory (buffer-file-name buffer))))
+    (let ((proc (start-process "git" "*git-auto-pull*" "git" "pull")))
+      (set-process-sentinel proc 'gac-process-sentinel)
+      (set-process-filter proc 'gac-process-filter))))
+
+
 (defvar gac--debounce-timers (make-hash-table :test #'equal))
 
 (defun gac--debounced-save ()
@@ -233,6 +261,11 @@ should already have been set up."
                  (or (and gac-automatically-add-new-files-p
                           (not (gac--buffer-is-tracked buffer)))
                      (gac--buffer-has-changes buffer)))
+        (with-current-buffer buffer
+          ;; with-current-buffer required here because gac-automatically-pull-p
+          ;; is buffer-local
+          (when gac-automatically-pull-p
+            (gac-pull buffer)))
         (gac-commit buffer)
         (with-current-buffer buffer
           ;; with-current-buffer required here because gac-automatically-push-p
@@ -252,6 +285,8 @@ should already have been set up."
 (defun gac-after-save-func ()
   "Commit the current file.
 
+When `gac-automatically-pull-p' is non-nil also pull.
+
 When `gac-automatically-push-p' is non-nil also push."
   (if gac-debounce-interval
       (gac--debounced-save)
@@ -260,7 +295,7 @@ When `gac-automatically-push-p' is non-nil also push."
 ;;;###autoload
 (define-minor-mode git-auto-commit-mode
   "Automatically commit any changes made when saving with this
-mode turned on and optionally push them too."
+mode turned on, optionally pull and push them too."
   :lighter " ga"
   (if git-auto-commit-mode
       (add-hook 'after-save-hook 'gac-after-save-func t t)
