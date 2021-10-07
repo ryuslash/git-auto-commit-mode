@@ -274,10 +274,7 @@ should already have been set up."
 
 (defun gac--before-save (buffer)
   (unwind-protect
-      (when (and (buffer-live-p buffer)
-                 (or (and gac-automatically-add-new-files-p
-                          (not (gac--buffer-is-tracked buffer)))
-                     (gac--buffer-has-changes buffer)))
+      (when (buffer-live-p buffer)
         (with-current-buffer buffer
           ;; with-current-buffer required here because gac-automatically-pull-p
           ;; is buffer-local
