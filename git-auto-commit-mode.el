@@ -209,23 +209,20 @@ should already have been set up."
   ;; default-directory. The explicit binding here is defensive, in case gac-push
   ;; starts being used elsewhere.
   (let ((default-directory (file-name-directory (buffer-file-name buffer))))
-    (let ((proc (start-process "git" "*git-auto-push*" "git" "push")))
-      (set-process-sentinel proc 'gac-process-sentinel)
-      (set-process-filter proc 'gac-process-filter))))
+    (call-process "git" nil "*git-auto-push*" nil "push")))
 
 (defun gac-pull (buffer)
   "Pull commits from the current upstream.
-
 This doesn't check or ask for a remote, so the correct remote
 should already have been set up."
-  ;; gac-pull is currently only called from gac--before-save, where it is wrapped
+  ;; gac-pull is currently only called from gac--after-save, where it is wrapped
   ;; in with-current-buffer, which should already take care of
   ;; default-directory. The explicit binding here is defensive, in case gac-pull
   ;; starts being used elsewhere.
   (let ((default-directory (file-name-directory (buffer-file-name buffer))))
-    (let ((proc (start-process "git" "*git-auto-pull*" "git" "pull")))
-      (set-process-sentinel proc 'gac-process-sentinel)
-      (set-process-filter proc 'gac-process-filter))))
+    (call-process "git" nil "*git-auto-pull*"  nil "merge" "--squash")
+    (call-process "git" nil "*git-auto-pull*" nil "commit" "--no-edit")
+    (call-process "git" nil "*git-auto-pull*" nil "pull" "--rebase")))
 
 
 (defvar gac--debounce-timers (make-hash-table :test #'equal))
@@ -265,28 +262,23 @@ should already have been set up."
                           (not (gac--buffer-is-tracked buffer)))
                      (gac--buffer-has-changes buffer)))
         (gac-commit buffer)
-        (with-current-buffer buffer
-          ;; with-current-buffer required here because gac-automatically-push-p
-          ;; is buffer-local
-          (when gac-automatically-push-p
-            (gac-push buffer))))
-    (remhash buffer gac--debounce-timers)))
-
-(defun gac--before-save (buffer)
-  (unwind-protect
-      (when (buffer-live-p buffer)
-        (with-current-buffer buffer
-          ;; with-current-buffer required here because gac-automatically-pull-p
-          ;; is buffer-local
-          (when gac-automatically-pull-p
-            (gac-pull buffer))))
+        (make-thread
+         (lambda ()
+           (with-current-buffer buffer
+             ;; with-current-buffer required here because gac-automatically-pull-p
+             ;; is buffer-local
+             (when gac-automatically-pull-p
+               (gac-pull buffer))
+             ;; with-current-buffer required here because gac-automatically-push-p
+             ;; is buffer-local
+             (when gac-automatically-push-p
+               (gac-push buffer))))))
     (remhash buffer gac--debounce-timers)))
 
 (defun gac-kill-buffer-hook ()
   (when (and gac-debounce-interval
              gac--debounce-timers
              (gethash (current-buffer) gac--debounce-timers))
-    (gac--before-save (current-buffer))
     (gac--after-save (current-buffer))))
 
 (add-hook 'kill-buffer-hook #'gac-kill-buffer-hook)
@@ -299,24 +291,14 @@ When `gac-automatically-push-p' is non-nil also push."
       (gac--debounced-save)
     (gac--after-save (current-buffer))))
 
-(defun gac-before-save-func ()
-  "Commit the current file.
-
-When `gac-automatically-pull-p' is non-nil also pull."
-  (gac--before-save (current-buffer)))
-
 ;;;###autoload
 (define-minor-mode git-auto-commit-mode
   "Automatically commit any changes made when saving with this
 mode turned on, optionally pull and push them too."
   :lighter " ga"
   (if git-auto-commit-mode
-      (progn
-        (add-hook 'before-save-hook 'gac-before-save-func t t)
-        (add-hook 'after-save-hook 'gac-after-save-func t t))
-    (progn
-      (remove-hook 'before-save-hook 'gac-before-save-func t)
-      (remove-hook 'after-save-hook 'gac-after-save-func t))))
+      (add-hook 'after-save-hook 'gac-after-save-func t t)
+    (remove-hook 'after-save-hook 'gac-after-save-func t)))
 
 (provide 'git-auto-commit-mode)
 
