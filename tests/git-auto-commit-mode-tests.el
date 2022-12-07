@@ -38,7 +38,7 @@
     (setq temp-dir (make-temp-file "gac-" t)
           current-directory default-directory
           default-directory temp-dir)
-    (shell-command "git init")
+    (shell-command "git init --initial-branch=gac-test")
     (shell-command "git config user.email user@example.com")
     (shell-command "git config user.name \"User Example\""))
 
