@@ -27,6 +27,10 @@
 (require 'buttercup)
 (require 'git-auto-commit-mode)
 
+(defun git-auto-commit-mode-tests--get-last-commit-message ()
+  "Get the last commit message from git."
+  (shell-command-to-string "git log --format=format:%s"))
+
 (describe "In a git repository"
   :var (temp-dir current-directory)
 
@@ -55,7 +59,7 @@
             (insert "test")
             (save-buffer))
 
-          (expect (shell-command-to-string "git log --format=format:%s")
+          (expect (git-auto-commit-mode-tests--get-last-commit-message)
                   :to-match (rx string-start "test" string-end)))))
 
     (describe "When ‘gac-automatically-add-new-files’ is nil"
@@ -68,7 +72,7 @@
             (insert "test")
             (save-buffer))
 
-          (expect (shell-command-to-string "git log --format=format:%s")
+          (expect (git-auto-commit-mode-tests--get-last-commit-message)
                   :not :to-match (rx string-start "test" string-end))))))
 
   (describe "Getting a relative path"
@@ -151,7 +155,7 @@
           (insert "test")
           (save-buffer))
 
-        (expect (shell-command-to-string "git log --format=format:%s")
+        (expect (git-auto-commit-mode-tests--get-last-commit-message)
                 :to-equal "test.txt")))
 
     (it "should use the message specified in ‘gac-default-message’"
@@ -163,7 +167,7 @@
           (insert "test")
           (save-buffer))
 
-        (expect (shell-command-to-string "git log --format=format:%s")
+        (expect (git-auto-commit-mode-tests--get-last-commit-message)
                 :to-equal "I made a commit!")))
 
     (it "should use the function result if ‘gac-default-message’ is a function"
@@ -177,7 +181,7 @@
           (insert "test")
           (save-buffer))
 
-        (expect (shell-command-to-string "git log --format=format:%s")
+        (expect (git-auto-commit-mode-tests--get-last-commit-message)
                 :to-equal "wip test.txt")))))
 
 (provide 'git-auto-commit-mode-tests)
