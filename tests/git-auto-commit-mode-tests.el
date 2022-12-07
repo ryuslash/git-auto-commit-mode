@@ -140,7 +140,45 @@
           (save-buffer))
 
         (expect (gac-relative-file-name temp-file)
-                :to-equal "[test-test.txt")))))
+                :to-equal "[test-test.txt"))))
+
+  (describe "Getting a commit message"
+    (it "should default to the relative file name"
+      (let* ((temp-file (expand-file-name "test.txt" temp-dir))
+             (buffer (find-file-noselect temp-file)))
+        (with-current-buffer buffer
+          (git-auto-commit-mode)
+          (insert "test")
+          (save-buffer))
+
+        (expect (shell-command-to-string "git log --format=format:%s")
+                :to-equal "test.txt")))
+
+    (it "should use the message specified in ‘gac-default-message’"
+      (let* ((temp-file (expand-file-name "test.txt" temp-dir))
+             (buffer (find-file-noselect temp-file))
+             (gac-default-message "I made a commit!"))
+        (with-current-buffer buffer
+          (git-auto-commit-mode)
+          (insert "test")
+          (save-buffer))
+
+        (expect (shell-command-to-string "git log --format=format:%s")
+                :to-equal "I made a commit!")))
+
+    (it "should use the function result if ‘gac-default-message’ is a function"
+      (let* ((temp-file (expand-file-name "test.txt" temp-dir))
+             (buffer (find-file-noselect temp-file))
+             (gac-default-message
+              (lambda (f)
+                (concat "wip " (gac-relative-file-name f)))))
+        (with-current-buffer buffer
+          (git-auto-commit-mode)
+          (insert "test")
+          (save-buffer))
+
+        (expect (shell-command-to-string "git log --format=format:%s")
+                :to-equal "wip test.txt")))))
 
 (provide 'git-auto-commit-mode-tests)
 ;;; git-auto-commit-mode-tests.el ends here
