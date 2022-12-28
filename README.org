@@ -3,7 +3,7 @@
 
 * NAME
 
-  git-auto-commit-mode - Emacs minor mode to automatically commit (and
+  git-auto-commit-mode - Emacs minor mode to automatically commit (and pull and
   push) a git repository.
 
   [[http://melpa.org/#/git-auto-commit-mode][file:http://melpa.org/packages/git-auto-commit-mode-badge.svg]]
@@ -26,6 +26,8 @@
   When enabled, git-auto-commit-mode uses the =after-save-hook= to
   commit changes to git each time. If =gac-automatically-push-p= is
   non-nil it also tries to push the ~HEAD~ to the current upstream.
+  If =gac-automatically-pull-p= is
+  non-nil it also tries to pull the ~HEAD~ to the current upstream.
   Making sure that upstream is properly set is the responsibility of
   the user.
 
@@ -81,6 +83,11 @@
     A boolean value indicating whether or not git-auto-commit-mode should try to
     push the git repository's ~HEAD~ to its default upstream. Setting up the
     upstream is the user's responsibility.
+
+  - =gac-automatically-pull-p= ::
+    A boolean value indicating whether or not git-auto-commit-mode should try to
+    pull the git repository's ~HEAD~ from its default upstream. Setting up the
+    upstream is the user's responsibility.    
 
   - =gac-automatically-add-new-files-p= ::
     A boolean value indicating whether or not git-auto-commit-mode should add
